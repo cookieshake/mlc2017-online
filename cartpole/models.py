@@ -159,12 +159,18 @@ class PolicyGradient(BaseModel):
     W1 = tf.get_variable("W1", shape=[self.D, self.H],
                                     initializer=tf.contrib.layers.xavier_initializer())
     layer1 = tf.nn.relu(tf.matmul(observations, W1))
-    W2 = tf.get_variable("W2", shape=[self.H, 1],
+
+    W2 = tf.get_variable("W2", shape=[self.H, self.H],
                                     initializer=tf.contrib.layers.xavier_initializer())
-    score = tf.matmul(layer1, W2)
+    layer2 = tf.nn.relu(tf.matmul(layer1, W2))
+
+    W3 = tf.get_variable("W3", shape=[self.H, 1],
+                                    initializer=tf.contrib.layers.xavier_initializer())
+
+    score = tf.matmul(layer2, W3)
     probability = tf.nn.sigmoid(score)
 
-    tvars = [W1, W2]
+    tvars = [W1, W2, W3]
     input_y = tf.placeholder(tf.float32,[None,1], name="input_y")
     advantages = tf.placeholder(tf.float32,name="reward_signal")
 
@@ -175,12 +181,14 @@ class PolicyGradient(BaseModel):
     adam = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
     W1Grad = tf.placeholder(tf.float32, name="batch_grad1")
     W2Grad = tf.placeholder(tf.float32, name="batch_grad2")
-    batchGrad = [W1Grad, W2Grad]
+    W3Grad = tf.placeholder(tf.float32, name="batch_grad3")
+    batchGrad = [W1Grad, W2Grad, W3Grad]
     updateGrads = adam.apply_gradients(zip(batchGrad, tvars), global_step=global_step)
 
     # return so we know what to keep
     return {'W1':W1,
             'W2':W2,
+            'W3':W3,
             'loss':loss,
             'observations': observations,
             'probability': probability,
@@ -190,28 +198,33 @@ class PolicyGradient(BaseModel):
             'W1Grad': W1Grad,
             'updateGrads': updateGrads,
             'tvars': tvars,
-            'W2Grad': W2Grad}
+            'W2Grad': W2Grad,
+            'W3Grad': W3Grad}
 
 
   # These variables will be saved by the saver
   def add_to_collection(self, results):
     tf.add_to_collection("W1", results["W1"])
     tf.add_to_collection("W2", results["W2"])
+    tf.add_to_collection("W3", results["W3"])
     tf.add_to_collection("observations", results["observations"])
     tf.add_to_collection("probability", results["probability"])
     tf.add_to_collection("input_y", results["input_y"])
     tf.add_to_collection("advantages", results["advantages"])
     tf.add_to_collection("newGrads1", results["newGrads"][0])
     tf.add_to_collection("newGrads2", results["newGrads"][1])
+    tf.add_to_collection("newGrads3", results["newGrads"][2])
     tf.add_to_collection("W1Grad", results["W1Grad"])
     tf.add_to_collection("updateGrads", results["updateGrads"])
     tf.add_to_collection("W2Grad", results["W2Grad"])
+    tf.add_to_collection("W3Grad", results["W3Grad"])
 
   # these values will be collected from the saver to restore a
   # trained model
   def get_collection(self, global_step):
     W1 = tf.get_collection("W1")[0]
     W2 = tf.get_collection("W2")[0]
+    W3 = tf.get_collection("W3")[0]
     observations = tf.get_collection("observations")[0]
     probability = tf.get_collection("probability")[0]
     input_y = tf.get_collection("input_y")[0]
@@ -219,13 +232,16 @@ class PolicyGradient(BaseModel):
     W1Grad = tf.get_collection("W1Grad")[0]
     updateGrads = tf.get_collection("updateGrads")[0]
     W2Grad = tf.get_collection("W2Grad")[0]
+    W3Grad = tf.get_collection("W3Grad")[0]
     newGrads1 = tf.get_collection("newGrads1")[0]
     newGrads2 = tf.get_collection("newGrads2")[0]
-    newGrads = [newGrads1, newGrads2]
+    newGrads3 = tf.get_collection("newGrads3")[0]
+    newGrads = [newGrads1, newGrads2, newGrads3]
 
     self.global_step = global_step
     self.W1 = W1
     self.W2 = W2
+    self.W3 = W3
     self.observations = observations
     self.probability = probability
     self.input_y = input_y
@@ -233,6 +249,7 @@ class PolicyGradient(BaseModel):
     self.W1Grad = W1Grad
     self.updateGrads = updateGrads
     self.W2Grad = W2Grad
+    self.W3Grad = W3Grad
     self.newGrads = newGrads
 
 
@@ -243,7 +260,7 @@ class PolicyGradient(BaseModel):
 
     # Reset the gradient placeholder. We will collect gradients in
     # gradBuffer until we are ready to update our policy network.
-    gradBuffer = sess.run([self.W1, self.W2])
+    gradBuffer = sess.run([self.W1, self.W2, self.W3])
     for ix, grad in enumerate(gradBuffer):
       gradBuffer[ix] = grad * 0
 
@@ -299,7 +316,8 @@ class PolicyGradient(BaseModel):
 
     # run updateGrads
     sess.run(self.updateGrads, feed_dict={self.W1Grad: self.gradBuffer[0],
-                                          self.W2Grad: self.gradBuffer[1]})
+                                          self.W2Grad: self.gradBuffer[1],
+                                          self.W3Grad: self.gradBuffer[2]})
 
     # clear the gradient buffer
     for ix,grad in enumerate(self.gradBuffer):
