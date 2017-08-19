@@ -46,7 +46,14 @@ class LogisticModel(BaseModel):
         weights_regularizer=slim.l2_regularizer(l2_penalty))
     return {"predictions": output}
 
-from tensorflow.contrib.slim.python.slim.nets import vgg
+from tensorflow.contrib.slim.python.slim.nets import resnet_v2
+
+class ResNetModel(BaseModel):
+  def create_model(self, model_input, num_classes=10, is_training=True, **unused_params):
+    output = resnet_v2.resnet_v2_50(model_input, num_classes=num_classes, is_training=is_training)[1]['predictions']
+    output = tf.reshape(output, [-1, num_classes])
+    return {"predictions": output}
+
 
 class VggModel(BaseModel):
   def create_model(self, model_input, num_classes=10, is_training=True, **unused_params):
