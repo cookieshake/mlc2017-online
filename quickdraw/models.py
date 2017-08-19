@@ -46,7 +46,7 @@ class LogisticModel(BaseModel):
         weights_regularizer=slim.l2_regularizer(l2_penalty))
     return {"predictions": output}
 
-from tensorflow.contrib.slim.python.slim.nets import resnet_v2, vgg, overfeat
+from tensorflow.contrib.slim.python.slim.nets import resnet_v2, vgg, overfeat, alexnet
 
 class ResNetModel(BaseModel):
   def create_model(self, model_input, num_classes=10, is_training=True, **unused_params):
@@ -67,6 +67,14 @@ class OverfeatModel(BaseModel):
   def create_model(self, model_input, num_classes=10, is_training=True, **unused_params):
     model_input = tf.image.resize_images(model_input, [231, 231])
     output = overfeat.overfeat(model_input, num_classes=num_classes, is_training=is_training)[0]
+    output = tf.reshape(output, [-1, num_classes])
+    output = tf.nn.softmax(output)
+    return {"predictions": output}
+
+class AlexNetModel(BaseModel):
+  def create_model(self, model_input, num_classes=10, is_training=True, **unused_params):
+    model_input = tf.image.resize_images(model_input, [224, 224])
+    output = alexnet.alexnet_v2(model_input, num_classes=num_classes, is_training=is_training)[0]
     output = tf.reshape(output, [-1, num_classes])
     output = tf.nn.softmax(output)
     return {"predictions": output}
