@@ -82,7 +82,7 @@ class QuickDrawFeatureReader(BaseReader):
     tf.add_to_collection("serialized_examples", serialized_examples)
     return self.prepare_serialized_examples(serialized_examples)
 
-  def prepare_serialized_examples(self, serialized_examples, width=101, height=101):
+  def prepare_serialized_examples(self, serialized_examples, width=70, height=70):
     # set the mapping from the fields to data types in the proto
     feature_map = {
            'image': tf.FixedLenFeature((), tf.string, default_value=''),
@@ -138,7 +138,7 @@ class QuickDrawTestFeatureReader(BaseReader):
     tf.add_to_collection("serialized_examples", serialized_examples)
     return self.prepare_serialized_examples(serialized_examples)
 
-  def prepare_serialized_examples(self, serialized_examples, width=101, height=101):
+  def prepare_serialized_examples(self, serialized_examples, width=70, height=70):
     # set the mapping from the fields to data types in the proto
     feature_map = {
            'image': tf.FixedLenFeature((), tf.string, default_value=''),
