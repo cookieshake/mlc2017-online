@@ -82,7 +82,7 @@ class QuickDrawFeatureReader(BaseReader):
     tf.add_to_collection("serialized_examples", serialized_examples)
     return self.prepare_serialized_examples(serialized_examples)
 
-  def prepare_serialized_examples(self, serialized_examples, width=70, height=70):
+  def prepare_serialized_examples(self, serialized_examples, width=28, height=28):
     # set the mapping from the fields to data types in the proto
     feature_map = {
            'image': tf.FixedLenFeature((), tf.string, default_value=''),
@@ -100,8 +100,8 @@ class QuickDrawFeatureReader(BaseReader):
       # thus we have to expand then squeeze.  Resize returns float32 in the
       # range [0, uint8_max]
       image = tf.expand_dims(image, 0)
-      # image = tf.image.resize_bilinear(
-      #     image, [height, width], align_corners=False)
+      image = tf.image.resize_bilinear(
+          image, [height, width], align_corners=False)
       image = tf.squeeze(image, squeeze_dims=[0])
       image = tf.cast(image, dtype=tf.uint8)
       return image
@@ -138,7 +138,7 @@ class QuickDrawTestFeatureReader(BaseReader):
     tf.add_to_collection("serialized_examples", serialized_examples)
     return self.prepare_serialized_examples(serialized_examples)
 
-  def prepare_serialized_examples(self, serialized_examples, width=70, height=70):
+  def prepare_serialized_examples(self, serialized_examples, width=28, height=28):
     # set the mapping from the fields to data types in the proto
     feature_map = {
            'image': tf.FixedLenFeature((), tf.string, default_value=''),
@@ -156,8 +156,8 @@ class QuickDrawTestFeatureReader(BaseReader):
       # thus we have to expand then squeeze.  Resize returns float32 in the
       # range [0, uint8_max]
       image = tf.expand_dims(image, 0)
-      # image = tf.image.resize_bilinear(
-      #     image, [height, width], align_corners=False)
+      image = tf.image.resize_bilinear(
+          image, [height, width], align_corners=False)
       image = tf.squeeze(image, squeeze_dims=[0])
       image = tf.cast(image, dtype=tf.uint8)
       return image
