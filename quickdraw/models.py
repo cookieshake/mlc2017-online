@@ -38,6 +38,8 @@ class YameModel(BaseModel):
     net = slim.max_pool2d(net, [2, 2], scope='pool4')
     net = slim.repeat(net, 3, slim.conv2d, 512, [3, 3], scope='conv5')
     net = slim.max_pool2d(net, [2, 2], scope='pool5')
+
+    net = slim.flatten(net)
     net = slim.fully_connected(net, 4096, scope='fc6')
     net = slim.dropout(net, 0.5, scope='dropout6', is_training=is_training)
     net = slim.fully_connected(net, 4096, scope='fc7')
