@@ -44,7 +44,7 @@ class YameModel(BaseModel):
     net = slim.dropout(net, 0.3, scope='dropout7', is_training=is_training)
     net = slim.fully_connected(net, num_classes, activation_fn=None, scope='fc8')
 
-    output = tf.reshape(output, [-1, num_classes])
+    output = tf.reshape(net, [-1, num_classes])
     output = tf.nn.softmax(net)
     
     return {"predictions": output}
