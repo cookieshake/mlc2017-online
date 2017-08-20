@@ -43,11 +43,11 @@ class YameModel(BaseModel):
     net = slim.fully_connected(net, 512, scope='fc7')
     net = slim.dropout(net, 0.3, scope='dropout7', is_training=is_training)
     net = slim.fully_connected(net, num_classes, activation_fn=None, scope='fc8')
-    
+
     output = tf.reshape(output, [-1, num_classes])
     output = tf.nn.softmax(net)
     
-    return return {"predictions": output}
+    return {"predictions": output}
 
 class LogisticModel(BaseModel):
   """Logistic model with L2 regularization."""
