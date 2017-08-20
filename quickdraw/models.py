@@ -28,19 +28,19 @@ class BaseModel(object):
 
 class YameModel(BaseModel):
   def create_model(self, model_input, num_classes=10, is_training=True, **unused_params):
-    net = slim.repeat(model_input, 1, slim.conv2d, 64, [3, 3], scope='conv1')
+    net = slim.repeat(model_input, 2, slim.conv2d, 64, [3, 3], scope='conv1')
     net = slim.max_pool2d(net, [2, 2], scope='pool1')
-    net = slim.repeat(net, 1, slim.conv2d, 128, [3, 3], scope='conv2')
+    net = slim.repeat(net, 2, slim.conv2d, 128, [3, 3], scope='conv2')
     net = slim.max_pool2d(net, [2, 2], scope='pool2')
-    net = slim.repeat(net, 2, slim.conv2d, 256, [3, 3], scope='conv3')
+    net = slim.repeat(net, 3, slim.conv2d, 256, [3, 3], scope='conv3')
     net = slim.max_pool2d(net, [2, 2], scope='pool3')
-    net = slim.repeat(net, 2, slim.conv2d, 512, [3, 3], scope='conv4')
+    net = slim.repeat(net, 3, slim.conv2d, 512, [3, 3], scope='conv4')
     net = slim.max_pool2d(net, [2, 2], scope='pool4')
-    net = slim.repeat(net, 2, slim.conv2d, 512, [3, 3], scope='conv5')
+    net = slim.repeat(net, 3, slim.conv2d, 512, [3, 3], scope='conv5')
     net = slim.max_pool2d(net, [2, 2], scope='pool5')
-    net = slim.fully_connected(net, 1024, scope='fc6')
+    net = slim.fully_connected(net, 4096, scope='fc6')
     net = slim.dropout(net, 0.5, scope='dropout6', is_training=is_training)
-    net = slim.fully_connected(net, 1024, scope='fc7')
+    net = slim.fully_connected(net, 4096, scope='fc7')
     net = slim.dropout(net, 0.5, scope='dropout7', is_training=is_training)
     net = slim.fully_connected(net, num_classes, activation_fn=None, scope='fc8')
 
