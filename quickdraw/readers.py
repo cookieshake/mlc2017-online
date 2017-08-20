@@ -100,8 +100,8 @@ class QuickDrawFeatureReader(BaseReader):
       # thus we have to expand then squeeze.  Resize returns float32 in the
       # range [0, uint8_max]
       image = tf.expand_dims(image, 0)
-      image = tf.image.resize_bilinear(
-          image, [height, width], align_corners=False)
+      # image = tf.image.resize_bilinear(
+      #     image, [height, width], align_corners=False)
       image = tf.squeeze(image, squeeze_dims=[0])
       image = tf.cast(image, dtype=tf.uint8)
       return image
@@ -156,8 +156,8 @@ class QuickDrawTestFeatureReader(BaseReader):
       # thus we have to expand then squeeze.  Resize returns float32 in the
       # range [0, uint8_max]
       image = tf.expand_dims(image, 0)
-      image = tf.image.resize_bilinear(
-          image, [height, width], align_corners=False)
+      # image = tf.image.resize_bilinear(
+      #     image, [height, width], align_corners=False)
       image = tf.squeeze(image, squeeze_dims=[0])
       image = tf.cast(image, dtype=tf.uint8)
       return image
