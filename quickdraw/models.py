@@ -26,6 +26,29 @@ class BaseModel(object):
   def create_model(self, unused_model_input, **unused_params):
     raise NotImplementedError()
 
+class YameModel(BaseModel):
+  def create_model(self, model_input, num_classes=10, is_training=True, **unused_params):
+    net = slim.conv2d(model_input, 64, [3, 3], scope='conv1')
+    net = slim.max_pool2d(net, [2, 2], scope='pool1')
+    net = slim.conv2d(model_input, 64, [3, 3], scope='conv2')
+    net = slim.max_pool2d(net, [2, 2], scope='pool2')
+    net = slim.conv2d(model_input, 64, [3, 3], scope='conv3')
+    net = slim.max_pool2d(net, [2, 2], scope='pool3')
+    net = slim.conv2d(model_input, 64, [3, 3], scope='conv4')
+    net = slim.max_pool2d(net, [2, 2], scope='pool4')
+    net = slim.conv2d(model_input, 64, [3, 3], scope='conv5')
+    net = slim.max_pool2d(net, [2, 2], scope='pool5')
+    net = slim.fully_connected(net, 512, scope='fc6')
+    net = slim.dropout(net, 0.3, scope='dropout6', is_training=is_training)
+    net = slim.fully_connected(net, 512, scope='fc7')
+    net = slim.dropout(net, 0.3, scope='dropout7', is_training=is_training)
+    net = slim.fully_connected(net, num_classes, activation_fn=None, scope='fc8')
+    
+    output = tf.reshape(output, [-1, num_classes])
+    output = tf.nn.softmax(net)
+    
+    return return {"predictions": output}
+
 class LogisticModel(BaseModel):
   """Logistic model with L2 regularization."""
 
