@@ -96,3 +96,10 @@ class MoeModel(models.BaseModel):
     final_probabilities = tf.reshape(final_probabilities_by_class_and_batch,
                                      [-1, vocab_size])
     return {"predictions": final_probabilities}
+
+
+class ResNetModel(BaseModel):
+  def create_model(self, model_input, vocab_size=2, **unused_params):
+    output = resnet_v2.resnet_v2_50(model_input, num_classes=vocab_size, is_training=False)[1]['predictions']
+    output = tf.reshape(output, [-1, num_classes])
+    return {"predictions": output}
