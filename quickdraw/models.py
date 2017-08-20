@@ -38,13 +38,14 @@ class YameModel(BaseModel):
     net = slim.max_pool2d(net, [2, 2], scope='pool4')
     net = slim.conv2d(net, 32, [3, 3], scope='conv5')
     net = slim.max_pool2d(net, [2, 2], scope='pool5')
-    net = slim.flatten(net)
+    net = slim.conv2d(net, num_classes, [1, 1], scope='conv6')
     net = slim.fully_connected(net, 512, scope='fc6')
     net = slim.dropout(net, 0.3, scope='dropout6', is_training=is_training)
     net = slim.fully_connected(net, 512, scope='fc7')
     net = slim.dropout(net, 0.3, scope='dropout7', is_training=is_training)
     net = slim.fully_connected(net, num_classes, activation_fn=None, scope='fc8')
 
+    output = tf.reshape(net, [-1, num_classes])
     output = tf.nn.softmax(net)
     
     return {"predictions": output}
