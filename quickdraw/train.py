@@ -153,7 +153,7 @@ def get_input_data_tensors(reader,
                     data_pattern + "'.")
     logging.info("Number of training files: %s.", str(len(files)))
     filename_queue = tf.train.string_input_producer(
-        files, num_epochs=num_epochs, shuffle=False)
+        files, num_epochs=num_epochs, shuffle=True)
     training_data = [
         reader.prepare_reader(filename_queue) for _ in range(num_readers)
     ]
