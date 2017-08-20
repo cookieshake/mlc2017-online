@@ -28,15 +28,15 @@ class BaseModel(object):
 
 class YameModel(BaseModel):
   def create_model(self, model_input, num_classes=10, is_training=True, **unused_params):
-    net = slim.conv2d(model_input, 64, [3, 3], scope='conv1')
+    net = slim.conv2d(model_input, 32, [3, 3], scope='conv1')
     net = slim.max_pool2d(net, [2, 2], scope='pool1')
-    net = slim.conv2d(model_input, 64, [3, 3], scope='conv2')
+    net = slim.conv2d(net, 32, [3, 3], scope='conv2')
     net = slim.max_pool2d(net, [2, 2], scope='pool2')
-    net = slim.conv2d(model_input, 64, [3, 3], scope='conv3')
+    net = slim.conv2d(net, 32, [3, 3], scope='conv3')
     net = slim.max_pool2d(net, [2, 2], scope='pool3')
-    net = slim.conv2d(model_input, 64, [3, 3], scope='conv4')
+    net = slim.conv2d(net, 32, [3, 3], scope='conv4')
     net = slim.max_pool2d(net, [2, 2], scope='pool4')
-    net = slim.conv2d(model_input, 64, [3, 3], scope='conv5')
+    net = slim.conv2d(net, 32, [3, 3], scope='conv5')
     net = slim.max_pool2d(net, [2, 2], scope='pool5')
     net = slim.flatten(net)
     net = slim.fully_connected(net, 512, scope='fc6')
@@ -45,7 +45,6 @@ class YameModel(BaseModel):
     net = slim.dropout(net, 0.3, scope='dropout7', is_training=is_training)
     net = slim.fully_connected(net, num_classes, activation_fn=None, scope='fc8')
 
-    output = tf.reshape(net, [-1, num_classes])
     output = tf.nn.softmax(net)
     
     return {"predictions": output}
