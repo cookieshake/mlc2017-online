@@ -163,7 +163,7 @@ def get_input_data_tensors(reader,
         batch_size=batch_size,
         capacity=batch_size * 50,
         min_after_dequeue=batch_size * 10,
-        allow_smaller_final_batch=True,
+        allow_smaller_final_batch=False,
         enqueue_many=True)
 
 
