@@ -156,7 +156,7 @@ def get_input_data_tensors(reader,
       tf.train.string_input_producer([f], num_epochs=1000, shuffle=False) for f in files
     ]
     training_data = [
-        reader.prepare_reader(q) for q in range(filename_queues)
+        reader.prepare_reader(q) for q in filename_queues
     ]
 
     return tf.train.shuffle_batch_join(
